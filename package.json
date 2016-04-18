@@ -1,0 +1,17 @@
+{
+  "name": "grunt-sample",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "author": "Fabien Cortina",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-compress": "^1.2.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-qunit": "^1.2.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-http-server": "^1.16.0"
+  }
+}
