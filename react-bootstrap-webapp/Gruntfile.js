@@ -17,14 +17,9 @@ module.exports = function(grunt) {
             default: ['<%= dist_dir %>', '<%= test_reports_dir %>']
         },
 
-        // TODO : use eslint instead:
-        // https://www.npmjs.com/package/grunt-eslint
-        jshint: {
-            options: {
-                esversion: 6
-            },
-            // default: ['<%= src_dir %>/*.js']
-            default: []
+        // Syntaxt (and srtyle) check
+        eslint: {
+            target: ['<%= src_dir %>/*.js']
         },
 
         // Static type checks
@@ -128,29 +123,32 @@ module.exports = function(grunt) {
         watch: {
             default: {
                 files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css', '<%= dist_main %>'],
-                tasks: ['jshint', 'copy']
+                tasks: ['eslint', 'flowbin', 'copy']
             }
         }
     });
 
     grunt.event.on('coverage', function(lcov, done) {
-        // console.log(lcov);
-        done(); // or done(false); in case of error
+        // Let Grunt know the test coverage is done
+        done();
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-flowbin');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-mocha-istanbul');
     grunt.loadNpmTasks('grunt-http-server');
 
-    grunt.registerTask('build', ['clean', 'jshint', 'flowbin', 'browserify:default', 'copy']);
+    grunt.registerTask('build', ['clean', 'eslint', 'flowbin', 'browserify:default', 'copy']);
     grunt.registerTask('test', ['mocha_istanbul']);
     grunt.registerTask('package', ['compress']);
-    grunt.registerTask('default', ['build', 'test', 'package']);
+
+    // Aliases
+    grunt.registerTask('make', ['build', 'test', 'package']);
+    grunt.registerTask('default', ['make']);
     grunt.registerTask('start', ['http-server', 'browserify:watch', 'watch']);
 };
