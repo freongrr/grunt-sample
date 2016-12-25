@@ -107,17 +107,6 @@ module.exports = function(grunt) {
             }
         },
 
-        run: {
-            test_server: {
-                options: {
-                    wait: false
-                },
-                args: [
-                    '<%= server_main %>',
-                ]
-            }
-        },
-
         // This keeps grunt running and copy the www resources when they change
         // But it's browserify:watch that re-regenerates the bundle
         watch: {
