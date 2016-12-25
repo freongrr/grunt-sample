@@ -3,9 +3,9 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import Hello from "./Hello.js";
+import App from "./App.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const content = document.getElementById("content");
-    ReactDOM.render((<Hello name="World"/>), content);
+    ReactDOM.render((<App />), content);
 });
