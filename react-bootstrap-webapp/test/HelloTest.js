@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import React from "react";
 import {shallow} from "enzyme";
 import {expect} from "chai";
@@ -15,9 +16,10 @@ describe("Hello", () => {
     it("is the correct element", () => {
         const wrapper = shallow(<Hello name="bob"/>);
         expect(wrapper.is("Alert")).to.equal(true);
-    })
+    }),
     it("has the correct class", () => {
         const wrapper = shallow(<Hello name="bob"/>);
         expect(wrapper.hasClass("hello")).to.equal(true);
-    })
+    });
 });
+

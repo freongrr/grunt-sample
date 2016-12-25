@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
         // Syntax (and style) check
         eslint: {
-            target: ['<%= src_dir %>/*.js']
+            target: ['<%= src_dir %>/*.js', '<%= test_dir %>/*.js']
         },
 
         // Static type checks
