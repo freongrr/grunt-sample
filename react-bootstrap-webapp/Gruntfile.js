@@ -17,7 +17,7 @@ module.exports = function(grunt) {
             default: ['<%= dist_dir %>', '<%= test_reports_dir %>']
         },
 
-        // Syntaxt (and srtyle) check
+        // Syntax (and style) check
         eslint: {
             target: ['<%= src_dir %>/*.js']
         },
