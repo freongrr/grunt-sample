@@ -54,7 +54,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm-make</id>
+                        <id>npm-build</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -62,7 +62,20 @@
                         <configuration>
                             <arguments>
                                 <argument>run-script</argument>
-                                <argument>make</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-test</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <arguments>
+                                <argument>run-script</argument>
+                                <argument>test</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -72,40 +85,6 @@
                     <executable>npm</executable>
                 </configuration>
             </plugin>
-
-            <!--This plugin works better when the developer does not have NPM on their box -->
-            <!--
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.3</version>
-                <configuration />
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>grunt-make</id>
-                        <goals>
-                            <goal>grunt</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <arguments>make</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

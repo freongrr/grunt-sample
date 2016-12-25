@@ -81,16 +81,6 @@ module.exports = function (grunt) {
             }
         },
 
-        // Run the backend in the background
-        // TODO : remove once I have a Jetty server running
-        'http-server': {
-            default: {
-                root: '<%= dist_dir %>',
-                runInBackground: true,
-                openBrowser: true
-            }
-        },
-
         // This keeps grunt running and copy the www resources when they change
         // But it's browserify:watch that re-regenerates the bundle
         watch: {
@@ -114,15 +104,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-flowbin');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-mocha-istanbul');
-    // TODO : remove
-    grunt.loadNpmTasks('grunt-http-server');
 
     grunt.registerTask('build', ['clean', 'eslint', 'flowbin', 'browserify:default', 'copy']);
     grunt.registerTask('test', ['mocha_istanbul']);
 
     // Aliases
-    grunt.registerTask('make', ['build', 'test']);
-    grunt.registerTask('default', ['make']);
-    // TODO : even when using Jetty, we still need to watch for changes!
-    grunt.registerTask('start', ['http-server', 'browserify:watch', 'watch']);
+    grunt.registerTask('default', ['build', 'test']);
+    grunt.registerTask('start', ['browserify:watch', 'watch']);
 };
