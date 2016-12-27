@@ -14,12 +14,15 @@ module.exports = function (grunt) {
 
         // Delete output files
         clean: {
-            default: ['<%= dist_dir %>', '<%= test_reports_dir %>']
+            'app-bundle': ['<%= dist_main %>'],
+            'static-files': ['<%= dist_dir %>/*.html', '<%= dist_dir %>/*.css'],
+            'test-reports': ['<%= test_reports_dir %>']
         },
 
         // Syntax (and style) check
         eslint: {
-            target: ['<%= src_dir %>/*.js', '<%= test_dir %>/*.js']
+            sources: ['<%= src_dir %>/*.js'],
+            tests: ['<%= test_dir %>/*.js']
         },
 
         // Static type checks
@@ -35,11 +38,11 @@ module.exports = function (grunt) {
                     ['babelify']
                 ]
             },
-            default: {
+            compile: {
                 src: ['<%= src_main %>'],
                 dest: '<%= dist_main %>'
             },
-            watch: {
+            'compile-and-watch': {
                 src: ['<%= src_main %>'],
                 dest: '<%= dist_main %>',
                 options: {
@@ -54,7 +57,7 @@ module.exports = function (grunt) {
 
         // Copy static files to the dist directory
         copy: {
-            sources: {
+            'static-files': {
                 expand: true,
                 cwd: '<%= src_dir %>',
                 src: ['*.html', '*.css', '*.gif', '*.jpg', '*.svg'],
@@ -70,7 +73,7 @@ module.exports = function (grunt) {
 
         // Run tests
         mocha_istanbul: {
-            default: {
+            tests: {
                 src: '<%= test_dir %>',
                 options: {
                     mochaOptions: ['--compilers', 'js:babel-register'],
@@ -81,12 +84,16 @@ module.exports = function (grunt) {
             }
         },
 
-        // This keeps grunt running and copy the www resources when they change
-        // But it's browserify:watch that re-regenerates the bundle
+        // This keeps grunt running and copy the compiled bundle and static resources as they change
+        // (but it's browserify:compile-and-watch that re-regenerates the bundle)
         watch: {
-            default: {
-                files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css', '<%= dist_main %>'],
-                tasks: ['eslint', 'flowbin', 'copy']
+            bundle: {
+                files: ['<%= dist_main %>'],
+                tasks: ['copy']
+            },
+            'static-files': {
+                files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css'],
+                tasks: ['copy']
             }
         }
     });
@@ -105,10 +112,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-mocha-istanbul');
 
-    grunt.registerTask('build', ['clean', 'eslint', 'flowbin', 'browserify:default', 'copy']);
+    grunt.registerTask('validate', ['eslint', 'flowbin']);
+    grunt.registerTask('compile', ['browserify:compile', 'copy']);
+    grunt.registerTask('build', ['clean', 'validate', 'compile']);
     grunt.registerTask('test', ['mocha_istanbul']);
 
     // Aliases
     grunt.registerTask('default', ['build', 'test']);
-    grunt.registerTask('start', ['browserify:watch', 'watch']);
+    grunt.registerTask('debug', ['clean', 'validate', 'browserify:compile-and-watch', 'copy', 'watch']);
 };
