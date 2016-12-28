@@ -96,6 +96,22 @@ module.exports = function (grunt) {
                 files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css'],
                 tasks: ['copy']
             }
+        },
+
+        // Compress the bundle
+        uglify: {
+            options: {
+                mangle: true,
+                compress: {
+                    // drop_console: true,
+                    // drop_debugger: true
+                }
+            },
+            bundle: {
+                files: {
+                    '<%= dist_main %>': ['<%= dist_main %>']
+                }
+            }
         }
     });
 
@@ -104,18 +120,18 @@ module.exports = function (grunt) {
         done();
     });
 
+    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-flowbin');
-    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-mocha-istanbul');
 
     grunt.registerTask('validate', ['eslint', 'flowbin']);
     grunt.registerTask('compile', ['browserify:compile', 'copy']);
-    grunt.registerTask('build', ['clean', 'validate', 'compile']);
+    grunt.registerTask('build', ['clean', 'validate', 'compile', 'uglify']);
     grunt.registerTask('test', ['mocha_istanbul']);
 
     // Aliases
