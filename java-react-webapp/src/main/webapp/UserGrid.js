@@ -2,41 +2,23 @@
 /* eslint no-console: ["off"] */
 "use strict";
 
+import type {User} from "./Types";
 import React from "react";
-import update from "react-addons-update";
 import {Table} from "react-bootstrap";
 
-type User = {
-    id: string,
-    firstName: string,
-    lastName: string
-};
-
-type State = {
+type UserGridProps = {
     users: Array<User>
 };
 
 export default class UserGrid extends React.Component {
-    state: State;
+    props: UserGridProps;
 
-    constructor(props: {}) {
+    constructor(props: UserGridProps) {
         super(props);
-
-        this.state = {users: []};
-    }
-
-    addUser(user: User) {
-        this.setState(update(this.state, {
-            users: {$push: [user]}
-        }));
-    }
-
-    setUsers(users: User[]) {
-        this.setState({users: users});
     }
 
     render() {
-        console.debug("Render table with " + this.state.users.length + " users");
+        console.debug("Render table with " + this.props.users.length + " users");
         return (
             <Table striped bordered condensed hover>
                 <thead>
@@ -47,21 +29,21 @@ export default class UserGrid extends React.Component {
                 </tr>
                 </thead>
                 <tbody>
-                {this.state.users.map(u => <UserGridRow key={u.id} user={u}/>)}
+                {this.props.users.map(u => <UserGridRow key={u.id} user={u}/>)}
                 </tbody>
             </Table>
         );
     }
 }
 
-type RowProps = {
+type UserGridRowProps = {
     user: User
 };
 
 class UserGridRow extends React.Component {
-    props: RowProps;
+    props: UserGridRowProps;
 
-    constructor(props: RowProps) {
+    constructor(props: UserGridRowProps) {
         super(props);
     }
 

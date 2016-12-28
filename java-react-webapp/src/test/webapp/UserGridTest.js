@@ -12,7 +12,7 @@ console.debug = function () {
 describe("UserGrid", () => {
 
     it("renders an empty table by default", () => {
-        let userGrid = <UserGrid />;
+        let userGrid = <UserGrid users={[]}/>;
 
         const wrapper = shallow(userGrid);
         expect(wrapper.find("thead").find("tr")).have.length(1);
@@ -20,20 +20,20 @@ describe("UserGrid", () => {
     });
 
     it("renders a row for each user", () => {
-        const wrapper = shallow(<UserGrid />);
+        const users = [
+            {id: "123", firstName: "bob", lastName: "test"},
+            {id: "456", firstName: "foo", lastName: "bar"}
+        ];
 
-        wrapper.instance().addUser({id: "123", firstName: "bob", lastName: "test"});
-        wrapper.instance().addUser({id: "456", firstName: "foo", lastName: "bar"});
+        const wrapper = shallow(<UserGrid users={users}/>);
 
         expect(wrapper.find("thead").find("tr")).have.length(1);
         expect(wrapper.find("UserGridRow")).have.length(2);
     });
 
     it("the row renders the id, first name and last name", () => {
-        const wrapper = shallow(<UserGrid />);
-
-        const grid = wrapper.instance();
-        grid.addUser({id: "123", firstName: "bob", lastName: "test"});
+        const user = {id: "123", firstName: "bob", lastName: "test"};
+        const wrapper = shallow(<UserGrid users={[user]}/>);
 
         const rowWrapper = wrapper.find("UserGridRow");
         expect(rowWrapper.key()).to.equal("123");

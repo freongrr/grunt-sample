@@ -2,25 +2,32 @@
 /* eslint no-console: ["off"] */
 "use strict";
 
+import type {User} from "./Types";
 import React from "react";
 import {PageHeader} from "react-bootstrap";
 import UserGrid from "./UserGrid";
 import AJAX from "./AJAX";
 
+type AppState = {
+    users: Array<User>
+};
+
 export default class App extends React.Component {
-    grid: UserGrid;
+    state: AppState;
 
     constructor(props: {}) {
         super(props);
+
+        this.state = {
+            users: [],
+        };
     }
 
     componentDidMount() {
-        this.grid.addUser({id: "0", firstName: "Dummy", lastName: "User"});
-
         // Fetch more users from the server
         AJAX.get("/users").then((json) => {
             const users = eval(json);
-            users.forEach(u => this.grid.addUser(u));
+            this.setState({users: users});
         }).catch((e) => {
             // TODO : show an error popup
             console.error(e);
@@ -30,10 +37,10 @@ export default class App extends React.Component {
     render() {
         return (
             <div>
-                <PageHeader>Template App&nbsp;
+                <PageHeader>Template App{" "}
                     <small>Java + React</small>
                 </PageHeader>
-                <UserGrid ref={(grid) => this.grid = grid}/>
+                <UserGrid users={this.state.users}/>
             </div>
         );
     }
