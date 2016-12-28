@@ -14,17 +14,19 @@ module.exports = function(grunt) {
 
         // Delete output files
         clean: {
-            default: ['<%= dist_dir %>', '<%= test_reports_dir %>']
+            'app-bundle': ['<%= dist_main %>'],
+            'static-files': ['<%= dist_dir %>/*.html', '<%= dist_dir %>/*.css'],
+            'test-reports': ['<%= test_reports_dir %>']
         },
 
         // Syntax (and style) check
         eslint: {
-            target: ['<%= src_dir %>/*.js', '<%= test_dir %>/*.js']
+            sources: ['<%= src_dir %>/*.js'],
+            tests: ['<%= test_dir %>/*.js']
         },
 
         // Static type checks
         flowbin: {
-            // TODO : watch for changes
             check: {},
         },
 
@@ -36,11 +38,11 @@ module.exports = function(grunt) {
                     ['babelify']
                 ]
             },
-            default: {
+            compile: {
                 src: ['<%= src_main %>'],
                 dest: '<%= dist_main %>'
             },
-            watch: {
+            'compile-and-watch': {
                 src: ['<%= src_main %>'],
                 dest: '<%= dist_main %>',
                 options: {
@@ -55,7 +57,7 @@ module.exports = function(grunt) {
 
         // Copy static files to the dist directory
         copy: {
-            sources: {
+            'static-files': {
                 expand: true,
                 cwd: '<%= src_dir %>',
                 src: ['*.html', '*.css', '*.gif', '*.jpg', '*.svg'],
@@ -64,14 +66,15 @@ module.exports = function(grunt) {
             bootstrap: {
                 expand: true,
                 cwd: 'node_modules/bootstrap/dist/',
-                src: ['css/bootstrap.min.css', 'css/bootstrap.min.css.map'],
+                // TODO : only copy the css maps when debugging
+                src: ['css/*.min.css', 'css/*.min.css.map', 'fonts/*'],
                 dest: '<%= dist_dir %>'
             }
         },
 
         // Run tests
         mocha_istanbul: {
-            default: {
+            tests: {
                 src: '<%= test_dir %>',
                 options: {
                     mochaOptions: ['--compilers', 'js:babel-register'],
@@ -82,9 +85,35 @@ module.exports = function(grunt) {
             }
         },
 
+        // This keeps grunt running and copy the compiled bundle and static resources as they change
+        // (but it's browserify:compile-and-watch that re-regenerates the bundle)
+        watch: {
+            bundle: {
+                files: ['<%= dist_main %>'],
+                tasks: ['copy']
+            },
+            'static-files': {
+                files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css'],
+                tasks: ['copy']
+            }
+        },
+
+        // Compress the bundle
+        uglify: {
+            options: {
+                mangle: true,
+                compress: true
+            },
+            bundle: {
+                files: {
+                    '<%= dist_main %>': ['<%= dist_main %>']
+                }
+            }
+        },
+
         // Package for distribution
         compress: {
-            default: {
+            zip: {
                 options: {
                     archive: function(x) {
                         return pkg.name + '-' + pkg.version + '.zip';
@@ -100,19 +129,10 @@ module.exports = function(grunt) {
 
         // Run the backend in the background
         'http-server': {
-            default: {
+            run: {
                 root: '<%= dist_dir %>',
                 runInBackground: true,
                 openBrowser: true
-            }
-        },
-
-        // This keeps grunt running and copy the www resources when they change
-        // But it's browserify:watch that re-regenerates the bundle
-        watch: {
-            default: {
-                files: ['<%= src_dir %>/*.html', '<%= src_dir %>/*.css', '<%= dist_main %>'],
-                tasks: ['eslint', 'flowbin', 'copy']
             }
         }
     });
@@ -122,22 +142,22 @@ module.exports = function(grunt) {
         done();
     });
 
+    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-compress');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-flowbin');
-    grunt.loadNpmTasks('grunt-browserify');
-    grunt.loadNpmTasks('grunt-mocha-istanbul');
     grunt.loadNpmTasks('grunt-http-server');
+    grunt.loadNpmTasks('grunt-mocha-istanbul');
 
-    grunt.registerTask('build', ['clean', 'eslint', 'flowbin', 'browserify:default', 'copy']);
+    grunt.registerTask('build', ['clean', 'eslint', 'flowbin', 'browserify:compile', 'copy']);
     grunt.registerTask('test', ['mocha_istanbul']);
-    grunt.registerTask('package', ['compress']);
+    grunt.registerTask('package', ['uglify', 'compress']);
 
     // Aliases
-    grunt.registerTask('make', ['build', 'test', 'package']);
-    grunt.registerTask('default', ['make']);
-    grunt.registerTask('start', ['http-server', 'browserify:watch', 'watch']);
+    grunt.registerTask('default', ['build', 'test', 'package']);
+    grunt.registerTask('start', ['http-server', 'browserify:compile-and-watch', 'watch']);
 };
