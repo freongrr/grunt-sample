@@ -7,6 +7,12 @@ Build the WAR file:
 
     mvn clean deploy
 
+Watch for changes in the JS code and static resources:
+
+    npm run debug
+    
+TODO : integrate that with Maven
+
 Links
 =====
 
