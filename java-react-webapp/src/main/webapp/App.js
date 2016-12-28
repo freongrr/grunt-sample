@@ -6,10 +6,12 @@ import type {User} from "./Types";
 import React from "react";
 import {PageHeader} from "react-bootstrap";
 import UserGrid from "./UserGrid";
+import ErrorDialog from "./ErrorDialog";
 import AJAX from "./AJAX";
 
 type AppState = {
-    users: Array<User>
+    users: Array<User>,
+    error: ?Error
 };
 
 export default class App extends React.Component {
@@ -20,6 +22,7 @@ export default class App extends React.Component {
 
         this.state = {
             users: [],
+            error: undefined
         };
     }
 
@@ -27,10 +30,9 @@ export default class App extends React.Component {
         // Fetch more users from the server
         AJAX.get("/users").then((json) => {
             const users = eval(json);
-            this.setState({users: users});
+            this.setState({error: null, users: users});
         }).catch((e) => {
-            // TODO : show an error popup
-            console.error(e);
+            this.setState({error: new Error("Could not load users: " + e.message)});
         });
     }
 
@@ -41,6 +43,7 @@ export default class App extends React.Component {
                     <small>Java + React</small>
                 </PageHeader>
                 <UserGrid users={this.state.users}/>
+                {this.state.error ? <ErrorDialog error={this.state.error}/> : null}
             </div>
         );
     }

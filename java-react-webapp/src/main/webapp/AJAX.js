@@ -18,6 +18,8 @@ export default {
                         deferred.resolve(xhr.response);
                     } else if (xhr.status == 0) {
                         deferred.reject(new Error("Could not connect to the server!"));
+                    } else if (xhr.status == 500) {
+                        deferred.reject(new Error("Internal Server Error"));
                     } else {
                         deferred.reject(new Error(xhr.status + ": " + xhr.response));
                     }

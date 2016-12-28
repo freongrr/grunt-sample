@@ -22,6 +22,11 @@ public final class AppServlet extends HttpServlet {
                     "{\"id\": \"3\", \"firstName\": \"paul\", \"lastName\": \"Bar\"}" +
                     "]";
 
+            // Generate a random error to test the error dialog
+            if (Math.random() < 0.1) {
+                throw new IllegalStateException("Boom!");
+            }
+
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
             response.setContentLength(users.length());
