@@ -20,7 +20,7 @@ export default class UserGrid extends React.Component {
     render() {
         console.debug("Render table with " + this.props.users.length + " users");
         return (
-            <Table striped bordered condensed hover>
+            <Table hover responsive>
                 <thead>
                 <tr>
                     <th>Id</th>

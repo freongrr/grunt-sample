@@ -66,7 +66,8 @@ module.exports = function (grunt) {
             bootstrap: {
                 expand: true,
                 cwd: 'node_modules/bootstrap/dist/',
-                src: ['css/bootstrap.min.css', 'css/bootstrap.min.css.map'],
+                // TODO : only copy the css maps when debugging
+                src: ['css/*.min.css', 'css/*.min.css.map', 'fonts/*'],
                 dest: '<%= dist_dir %>'
             }
         },

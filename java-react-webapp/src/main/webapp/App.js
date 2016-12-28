@@ -4,7 +4,7 @@
 
 import type {User} from "./Types";
 import React from "react";
-import {PageHeader} from "react-bootstrap";
+import {PageHeader, Button, Glyphicon} from "react-bootstrap";
 import UserGrid from "./UserGrid";
 import ErrorDialog from "./ErrorDialog";
 import AJAX from "./AJAX";
@@ -27,7 +27,11 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        // Fetch more users from the server
+        this.refresh();
+    }
+
+    refresh() {
+        // Fetch users from the server
         AJAX.get("/users").then((json) => {
             const users = eval(json);
             this.setState({error: null, users: users});
@@ -43,6 +47,7 @@ export default class App extends React.Component {
                     <small>Java + React</small>
                 </PageHeader>
                 <UserGrid users={this.state.users}/>
+                <Button bsStyle="primary" onClick={() => this.refresh()}><Glyphicon glyph="refresh"/> Refresh</Button>
                 {this.state.error ? <ErrorDialog error={this.state.error}/> : null}
             </div>
         );
