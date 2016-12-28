@@ -5,10 +5,6 @@ import {shallow} from "enzyme";
 import {expect} from "chai";
 import App from "../../main/webapp/App";
 
-// The Console class in NodeJS does not have a console.debug(...) method
-console.debug = function () {
-};
-
 describe("App", () => {
 
     it("has a title", () => {
@@ -21,5 +17,20 @@ describe("App", () => {
     it("has a grid of users", () => {
         const wrapper = shallow(<App />);
         expect(wrapper.find("UserGrid")).to.have.length(1);
+    });
+
+    it("shows an error dialog when the call to the server fails", (done) => {
+        const wrapper = shallow(<App />);
+
+        expect(wrapper.find("ErrorDialog")).to.have.length(0);
+
+        // I know this will fail because there's not XMLHttpRequest object...
+        wrapper.instance().refresh();
+
+        setTimeout(() => {
+            expect(wrapper.find("ErrorDialog")).to.have.length(1);
+            expect(wrapper.find("ErrorDialog").prop("error").message).to.include("Could not load users");
+            done();
+        }, 100);
     });
 });

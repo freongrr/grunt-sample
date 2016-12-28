@@ -12,9 +12,8 @@ console.debug = function () {
 describe("UserGrid", () => {
 
     it("renders an empty table by default", () => {
-        let userGrid = <UserGrid users={[]}/>;
+        const wrapper = shallow(<UserGrid users={[]}/>);
 
-        const wrapper = shallow(userGrid);
         expect(wrapper.find("thead").find("tr")).have.length(1);
         expect(wrapper.find("UserGridRow")).have.length(0);
     });

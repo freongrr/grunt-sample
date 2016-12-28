@@ -7,7 +7,7 @@ import when from "when";
 
 // TODO : use a proper framework
 export default {
-    get: function (path: string, ...uglyHackToAvoidCallingWithTooManyArguments: Array<void>) {
+    get: function (path: string, ...uglyHackToAvoidCallingWithTooManyArguments: Array<void>): Promise<any> {
         const deferred = when.defer();
         try {
             const xhr = getXMLHttpRequest();
@@ -16,31 +16,38 @@ export default {
                 if (xhr.readyState == 4) {
                     if (xhr.status == 200) {
                         deferred.resolve(xhr.response);
-                    } else if (xhr.status == 0) {
-                        deferred.reject(new Error("Could not connect to the server!"));
-                    } else if (xhr.status == 500) {
-                        deferred.reject(new Error("Internal Server Error"));
                     } else {
-                        deferred.reject(new Error(xhr.status + ": " + xhr.response));
+                        const errorMessage = extractErrorMessage(xhr.status, xhr.response);
+                        deferred.reject(new Error(errorMessage));
                     }
                 }
             };
             xhr.send();
         } catch (e) {
-            deferred.reject(new Error("Could not fetch failed builds: " + e));
+            deferred.reject(e);
         }
         return deferred.promise;
     }
 };
 
 function getXMLHttpRequest(): XMLHttpRequest {
-    if (typeof XMLHttpRequest != "undefined") {
-        try {
+    try {
+        if (typeof XMLHttpRequest != "undefined") {
             return new XMLHttpRequest();
-        } catch (e) {
-            console.warn("Failed to initialize XMLHttpRequest", e);
+        } else {
+            return window.createRequest();
         }
+    } catch (e) {
+        throw new Error("Can't create XMLHttpRequest");
     }
-    // fallback
-    return window.createRequest();
+}
+
+function extractErrorMessage(statusCode, responseContent) {
+    if (statusCode == 0) {
+        return "Could not connect to the server!";
+    } else if (statusCode == 500) {
+        return "Internal Server Error";
+    } else {
+        return statusCode + ": " + responseContent;
+    }
 }
