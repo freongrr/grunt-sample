@@ -24,6 +24,11 @@ export default class ErrorDialog extends React.Component {
         };
     }
 
+    componentWillReceiveProps(nextProps: ErrorDialogProps) {
+        // Show the dialog  again when a new error is assigned 
+        this.setState({visible: nextProps.error !== undefined});
+    }
+
     hide() {
         this.setState({visible: false});
     }
